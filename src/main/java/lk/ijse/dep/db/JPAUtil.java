@@ -14,10 +14,9 @@ public class JPAUtil {
 
   private static EntityManagerFactory buildEntityManagerFactory() {
 
-    File fileProp = new File("resources/application.properties");
     Properties properties = new Properties();
     try {
-      properties.load(new FileInputStream(fileProp));
+      properties.load(JPAUtil.class.getResourceAsStream("/application.properties"));
     } catch (IOException e) {
       throw new RuntimeException();
     }
