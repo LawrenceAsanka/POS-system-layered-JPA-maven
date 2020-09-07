@@ -2,6 +2,8 @@ package lk.ijse.dep.controller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,11 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchOrdersFormController {
+    private final OrderBO orderBO = BOFactory.getInstance().getBO(BOType.ORDER);
     public TextField txtSearch;
     public TableView<OrderTM> tblOrders;
     List<OrderTM> orderArrayList = new ArrayList<>();
-
-    private final OrderBO orderBO = BOFactory.getInstance().getBO(BOType.ORDER);
 
     public void initialize() {
 
@@ -36,18 +37,27 @@ public class SearchOrdersFormController {
         tblOrders.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("customerName"));
         tblOrders.getColumns().get(4).setCellValueFactory(new PropertyValueFactory<>("orderTotal"));
 
-        //getAllOrders();
+        getAllOrders();
 
         txtSearch.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-
+                tblOrders.getItems().clear();
+                for (OrderTM orderDetail : orderArrayList) {
+                    if (orderDetail.getOrderId().contains(newValue) ||
+                            orderDetail.getOrderDate().toString().contains(newValue) ||
+                            orderDetail.getCustomerId().contains(newValue) ||
+                            orderDetail.getCustomerName().contains(newValue) ||
+                            (String.valueOf(orderDetail.getOrderTotal()).contains(newValue))) {
+                        tblOrders.getItems().add(orderDetail);
+                    }
+                }
             }
         });
 
     }
 
- /*   private void getAllOrders() {
+    private void getAllOrders() {
         tblOrders.getItems().clear();
         List<OrderTM> allOrders = null;
         try {
@@ -58,13 +68,13 @@ public class SearchOrdersFormController {
 
         ObservableList<OrderTM> orderObservableList = FXCollections.observableArrayList(allOrders);
         tblOrders.setItems(orderObservableList);
-        if (allOrders != null){
+        if (allOrders != null) {
             for (OrderTM orders : allOrders) {
                 orderArrayList.add(new OrderTM(orders.getOrderId(), orders.getOrderDate(), orders.getCustomerId(), orders.getCustomerName(),
                         orders.getOrderTotal()));
             }
         }
-    }*/
+    }
 
     @FXML
     private void navigateToHome(MouseEvent event) throws IOException {
